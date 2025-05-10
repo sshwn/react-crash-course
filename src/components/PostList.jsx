@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import Post from './Post';
 import NewPost from './NewPost';
@@ -8,6 +8,28 @@ import classes from './PostList.module.css';
 
 function PostList({isPosting, onStopPosting}) {    
     const [posts, setPosts] = useState([]);
+
+    // useState와 달리 값을 반환하지 않는다.
+    // 함수를 값으로 받는다 
+    // 두번째 인자를 배열로 받는다
+    // useEffect(() => {}, []);
+    /*
+        안에있는 효과함수가 컴포넌트 함수가 실행될때마다 함께 실행되지 않게 해줌으로써 
+        무한 루프 발생을 막아준다. 
+        가끔씩은 같이 동작함 (처음엔 데이터를 가져와야하니까) 
+        두번째 인자로 결정된다. (배열)
+        빈배열을 넣으면 이 함수에 의존성이 없다는 뜻이므로 컴포넌트가 처음 렌더링될때만 실행 
+    */        
+
+    useEffect(() => {
+        async function fetchPosts() {
+            const response = await fetch('http://localhost:8080/posts')
+            const resData = await response.json();        
+            setPosts(resData.posts);
+        };
+
+        fetchPosts();
+    }, []);
 
     function addPostHandler(postData) {
 //        setPosts([postData, ...posts]);
