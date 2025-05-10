@@ -8,6 +8,7 @@ import classes from './PostList.module.css';
 
 function PostList({isPosting, onStopPosting}) {    
     const [posts, setPosts] = useState([]);
+    const [isFetching, setIsFetching] = useState(false);
 
     // useState와 달리 값을 반환하지 않는다.
     // 함수를 값으로 받는다 
@@ -23,9 +24,11 @@ function PostList({isPosting, onStopPosting}) {
 
     useEffect(() => {
         async function fetchPosts() {
+            setIsFetching(true);    // 데이터 가져올때 로딩 
             const response = await fetch('http://localhost:8080/posts')
             const resData = await response.json();        
             setPosts(resData.posts);
+            setIsFetching(false);   // 데이터 가져오면 로딩 제거
         };
 
         fetchPosts();
@@ -59,19 +62,18 @@ function PostList({isPosting, onStopPosting}) {
                         />
                 </Modal>
             )}
-            {posts.length > 0 && (
+            {!isFetching && posts.length > 0 && (
                 <ul className={classes.posts}>            
                 {posts.map((post) => <Post key={post.body} author={post.author} body={post.body} />)}
             </ul>
             )}
-            {posts.length === 0 && 
+            {!isFetching && posts.length === 0 && (
             <div style={{textAlign: 'center', color: 'white'}}>
                 <h2>There are no posts yet.</h2>
                 <p>Start adding some!</p>
             </div>
-
-            }
-            
+            )}
+            {isFetching && <div style={{textAlign: 'center', color: 'white'}}><p>Loading posts...</p></div>}
         </>
     )
 }
