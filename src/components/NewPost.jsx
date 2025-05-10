@@ -20,6 +20,7 @@ function NewPost(props) {
       body: enteredBody,
       author: enteredAuthor
     }
+    props.onAddPost(postData);
     console.log(postData);
     props.onCancel();
   }
